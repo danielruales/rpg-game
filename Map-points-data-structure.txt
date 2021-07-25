@@ -1,0 +1,29 @@
+# To move a character, I already implemented adding them to the mapPoint.persons queue
+	# But I still need to remove them from their current spot, so need to implement a removal from mapPoint.persons queue
+	# To do this, I need to do the following:
+		# Add a trait to the LinkedList class --> self.indices = {curr_index: curr_node}
+		# Create a dictionary with key of index and value of indexed node
+		# Add a function to the LinkedList class to remove an indexed node
+		# Add a function to the Map class to remove a point
+		# Add a function to the Person class to remove a point
+				
+currMap.points = {
+	(101,101): {
+		currMap.mapPoint.pointCategories.pc = mapPoint.persons,
+		currMap.pointCategories.npc = mapPoint.persons,
+		currMap.pointCategories.item = mapPoint.item,
+		currMap.pointCategories.path = mapPoint.path,
+		currMap.pointCategories.obstacle = mapPoint.obstacle,
+	}
+}
+
+mapPoint = MapPoint Object
+>> mapPoint.persons = point_queue
+>> mapPoint.items = point_queue
+>> mapPoint.paths = point_queue
+
+point_queue = LinkedList Object
+>> personIdXXX --> personIdYYY --> personIdZZZ
+>> itemIdXXX --> itemIdYYY --> itemIdZZZ
+>> pathsXXX --> pathsYYY --> pathsZZZ
+

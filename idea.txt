@@ -1,0 +1,7 @@
+game
+	- linked list
+		- stack
+			- block based game where you traverse on a 2D plane
+			- map will have 2D coordinates with randomly generated seed
+				- can have loot, monsters, traps, bosses
+			- once you die, traverse back 10 nodes
