@@ -1,0 +1,12 @@
+# Using npc as an example
+
+Map.points[(101,101)].pointCategories['npc'].LinkedListQueue
+
+Encounter.encounterCategories['npc'].LinkedListQueue
+
+Person.encounter['npc']
+
+# Encounter.encounterCategories['npc'] could point to Map.points[(101,101)].pointCategoriesObj['npc']
+# So when an npc is defeated it'll be removed from Encounter and Map with one operation
+# Otherwise keep them separate and just do two operations every time there is a removal
+# Update: I am pointing the encounter to the mapPoint LinkedList. Still have to extensively test this to ensure functionality.
