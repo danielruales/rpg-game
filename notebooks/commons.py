@@ -158,10 +158,10 @@ class PointCategoriesObj:
         curr_cat_LL.pop_indexed_node(id_to_remove)
 
     def check_pointCategories_isEmpty(self):
-        isEmpty = False
+        isEmpty = True
         for key, item in self.pointCategories.items(): # Check if any category is empty
-            if item is None or item == {}:
-                isEmpty = True
+            if item is not None and item != {} and item.head is not None:
+                isEmpty = False
                 return isEmpty
         return isEmpty
 
@@ -189,6 +189,8 @@ class Map:
         curr_id = obj_to_remove.id
         self.points[curr_point].remove_id_from_pointCategories(curr_cat, curr_id)
         point_isEmpty = self.points[curr_point].check_pointCategories_isEmpty()
+        if point_isEmpty:
+            self.points.pop(curr_point, None)
         return point_isEmpty
 
 class Encounter:
@@ -214,7 +216,7 @@ class Encounter:
         curr_point = person.curr_pos.point
         person.encounter.encounterCategories = curr_map.points.get(curr_point) # Points the person.encounter.encounterCategories to curr_map.points.get(curr_point) LinkedList. This allows the encounter to always stay updated on the mapPoint.
         # check_npc = curr_map.points.get(curr_point)
-        if curr_point in curr_map.points: # Check if pc current point is a key in the Map points dictionary
+        if curr_point in curr_map.points: # Check if pc current point is a key in the Map points dictionary before 
             # person.encounter.add_to_encounter(curr_map.points[curr_point].pointCategories)
             return True
         else:
@@ -229,13 +231,14 @@ class Person:
                 self.defense = defense
                 self.agility = agility
     
-    def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, strength=10, defense=10, agility=10, encounter=None):
+    def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, strength=10, defense=10, agility=10, encounter=None, isDead=False):
         self.name = name
         self.curr_pos = Point(curr_pos) # Point(n,n)
         curr_point = self.curr_pos.point
         self.stats = self.stats(curr_pos, hp, mp, strength, defense, agility)
         self.pointCategory = pointCategory
         self.encounter = Encounter(curr_map=curr_map, curr_point=curr_point)
+        self.isDead = isDead
         
         # CHANGE THIS: Make separate classes for pc, npc, item, path, obstacle, etc.
         # Can share common traits but class should be separate
@@ -257,7 +260,20 @@ class Person:
                 curr_map.add_to_points(self)
                 return True
             else:
+                curr_map.add_to_points(self)
                 return False
+        else:
+            curr_map.add_to_points(self)
+    
+    def attack(self): # Andrew is developing this function
+        pass
+
+    def check_isDead(self):
+        self.isDead = True
+        return self.stats.hp <= 0
+
+    def kill_person(self, curr_map):
+        curr_map.remove_from_points(self)
 
 def create_default_person(name, starting_pos, char_type, curr_map, pointCategory, ids):
     def_stats = default_stats[char_type]
