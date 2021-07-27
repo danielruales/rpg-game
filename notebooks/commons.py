@@ -270,8 +270,8 @@ class Person:
         pass
 
     def check_isDead(self):
-        self.isDead = True
-        return self.stats.hp <= 0
+        self.isDead = self.stats.hp <= 0
+        return self.isDead
 
     def kill_person(self, curr_map):
         curr_map.remove_from_points(self)
