@@ -193,6 +193,8 @@ class Map:
             self.points.pop(curr_point, None)
         return point_isEmpty
 
+# Still need to add functionality to class Encounter to do different things for each PointCategory encounter type
+# Need to add a subclass Battle to handle the Battle encounter. This will go hand in hand with Person.attack()
 class Encounter:
     def __init__(self, encounterCategories=None, curr_map=None, curr_point=None):
         # These will be specific to each person as it's a parameter in the person class
@@ -203,7 +205,6 @@ class Encounter:
         # self.encounterCategories[curr_cat].push(LL_to_add.head) # Add the head of the LL to add to the existing encounter LL
         self.encounterCategories.add_to_pointCategories(dict_to_add)
     
-    # TODO: Create a shared function between Map and Encounter to remove an id from the LL
     def remove_from_encounter(self, obj_to_remove):
         curr_point = obj_to_remove.curr_pos.point
         curr_cat = obj_to_remove.pointCategory.name
