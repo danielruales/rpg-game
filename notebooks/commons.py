@@ -240,6 +240,7 @@ class Person:
         self.pointCategory = pointCategory
         self.encounter = Encounter(curr_map=curr_map, curr_point=curr_point)
         self.isDead = isDead
+        self.isActionable = False
         
         # CHANGE THIS: Make separate classes for pc, npc, item, path, obstacle, etc.
         # Can share common traits but class should be separate
@@ -249,22 +250,20 @@ class Person:
             self.id = ids.npc_Ids.add_id(self)
         print(self.pointCategory)
         curr_map.add_to_points(self)
-        
-    def move_spaces(self, movement, curr_map):
+    
+    # Need to build on this with a sub function that actually handles the encounter
+    def actionOnNewSpace(self, curr_map):
+        self.encounter = Encounter(curr_map=curr_map, curr_point=self.curr_pos.point)
+        isEncounter = True if self.encounter.check_for_encounter(curr_map, self) else False
+        return isEncounter
+    
+    def move_spaces(self, movement, curr_map): # Default move_spaces() will just move the Person from point A to point B
         curr_map.remove_from_points(self)
         movement = Point(movement)
         self.curr_pos.move_point(movement)
-        if self.pointCategory == PointCategories.pc: # Check for encounter if person is a pc
-            # curr_encounter = Encounter()
-            self.encounter = Encounter(curr_map=curr_map, curr_point=self.curr_pos.point)
-            if self.encounter.check_for_encounter(curr_map, self):
-                curr_map.add_to_points(self)
-                return True
-            else:
-                curr_map.add_to_points(self)
-                return False
-        else:
-            curr_map.add_to_points(self)
+        isEncounter = self.actionOnNewSpace(curr_map) if self.isActionable else False
+        curr_map.add_to_points(self)
+        return isEncounter
     
     def attack(self): # Andrew is developing this function
         pass
@@ -276,8 +275,49 @@ class Person:
     def kill_person(self, curr_map):
         curr_map.remove_from_points(self)
 
-def create_default_person(name, starting_pos, char_type, curr_map, pointCategory, ids):
+class PC(Person):
+    class SkillTree:
+        def __init__(self):
+            pass
+    def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, 
+                    strength=10, defense=10, agility=10, encounter=None, isDead=False,
+                    skillTree=SkillTree()):
+        super().__init__(name, curr_pos, curr_map, pointCategory, ids, hp, mp, strength, defense, agility, encounter, isDead)
+        
+        # Add more attributes for PC class
+        self.isActionable = True
+
+        # TODO: Develop class SkillTree and sub functions
+        self.skillTree = skillTree
+
+    def addToSkillTree(self):
+        pass
+
+    # def move_spaces(self, movement, curr_map): # Overwrite Person.move_spaces() because PC will select action(s) depending on encounter
+    #     super().
+    def move_spaces(self, movement, curr_map):
+        return super().move_spaces(movement, curr_map)
+
+class NPC(Person):
+    def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, 
+                    strength=10, defense=10, agility=10, encounter=None, isDead=False):
+        super().__init__(name, curr_pos, curr_map, pointCategory, ids, hp, mp, strength, defense, agility, encounter, isDead)
+        
+        # Add more attributes for NPC class
+        self.isActionable = False
+    
+    def move_spaces(self, movement, curr_map):
+        return super().move_spaces(movement, curr_map)
+
+
+def create_default_pc(name, starting_pos, char_type, curr_map, pointCategory, ids):
     def_stats = default_stats[char_type]
-    person = Person(name, starting_pos, curr_map, pointCategory, ids, def_stats['hp'], def_stats['mp'], 
+    person = PC(name, starting_pos, curr_map, pointCategory, ids, def_stats['hp'], def_stats['mp'], 
+                    def_stats['strength'], def_stats['defense'], def_stats['agility'])
+    return person
+
+def create_default_npc(name, starting_pos, char_type, curr_map, pointCategory, ids):
+    def_stats = default_stats[char_type]
+    person = NPC(name, starting_pos, curr_map, pointCategory, ids, def_stats['hp'], def_stats['mp'], 
                     def_stats['strength'], def_stats['defense'], def_stats['agility'])
     return person
