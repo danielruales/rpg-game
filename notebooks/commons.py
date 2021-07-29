@@ -297,6 +297,65 @@ class PC(Person):
     #     super().
     def move_spaces(self, movement, curr_map):
         return super().move_spaces(movement, curr_map)
+    
+    def doAction(self):
+        '''
+        Each category in PointCategoriesObj will have different action characteristics.
+
+        PC - This is multiplayer functionality. Will add support further down the line.
+        NPC - Wiill have similar characteristcs than PC, except PC will have extra features.
+            1. Analyze
+                - PC.stats.intelligence and PC.stats.awareness will allow the PC to analyze the situation and NPC.
+                - When analyzing the situation, take into account the surroundings, number of Persons around, obstacles, etc.
+                - When analyzing the NPC, take into account their stats, equipment, looks, expression, etc.
+            2. Attack
+                - PC.stats.strength, PC.stats.defense, PC.stats.agility, PC.stats.stamina, PC.stats.luck
+                - PC.equipment.armour, PC.equipment.weapon, PC.equipment.ammo
+                    - PC.equipment.armour --> defense, piercing_defense_bonus, resistance, buff, speed_multiplier
+                    - PC.equipment.weapon --> attack, attack_type, attack_speed, armour_piercing, poison, buff, range
+                    - PC.equipment.ammo --> attack, attack_speed, armour_piercing, poison, buff, range
+                - PC.selected_move from PC.move_list from PC.equipment.weapon
+                - Agility to decide attacking order and dodge capability
+            3. Trade
+                - PC.stats.charisma, PC.stats.awareness, PC.stats.luck, PC.skills.barter
+                - PC.relationships
+                    - This will be a dictionary for Person that keeps track of relationships across all NPCs
+                - Better stats will give player better buying and selling prices and capabilities
+            4. Converse
+                - PC.stats.charisma, PC.stats.awareness, PC.stats.luck
+                - PC.relationships
+                    - This will be a dictionary for Person that keeps track of relationships across all NPCs
+                - Better stats will give player more information from convo and higher odds of having NPC follow you
+            5. Pickpocket
+                - PC.stats.awareness, PC.skills.stealth, PC.skills.thievery
+        Item - PC will be able to:
+            1. Inspect (will use awareness and intelligence skills)
+                - We will add more skills to add more color to the game, such as inspect.
+                - For now, we can just return the item description
+                    - Will have more varied item descriptions eventually.
+            2. Add to inventory (if full inventory return full inventory msg)
+            3. Equip (if full inventory return full inventory msg)
+            4. Compare to current equipment stats if it's equipable
+            
+        Path - This includes entering a dungeon, room by opening a door or walking through the entrance.
+            This will confirm the players action and load the next area if necessary.
+            We don't necessarily need to include this, but if we need to load areas / sub maps then it may be necessary.
+            It would also be necessary if we have a fast travel option.
+            If we have dungeoneering then we would want to include this as it allows players to enter a dungeon when they're ready.
+            1. Inspect
+                - PC.stats.intelligence and PC.stats.awareness will allow the PC to analyze the path.
+            2. Enter
+                - PC.stats.level will gatekeep the area. The player needs to have a certain to enter the area.
+        Obstacle - Will use PC stats.agility, stats.strength, stats.intelligence to:
+            1. Analyze the obstacle.
+                - PC.stats.intelligence and PC.stats.awareness will allow the PC to analyze if they can pass the obstacle without fault.
+            2. Jump over / dodge / etc. the obstacle if the situation allows.
+                - PC.stats.agility will determine if PC has enough agility to pass obstacle.
+                - If PC tries to pass obstacle and fails, will take some damage if it's a trap or fall etc.
+            3. Break through the obstacle if the situation allows.
+                - PC.stats.strength will determine if PC has enough strength to break through the obstacle.
+        '''
+        pass
 
 class NPC(Person):
     def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, 
