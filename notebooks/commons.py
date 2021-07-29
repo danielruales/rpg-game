@@ -251,19 +251,23 @@ class Person:
         print(self.pointCategory)
         curr_map.add_to_points(self)
     
-    # Need to build on this with a sub function that actually handles the encounter
-    def actionOnNewSpace(self, curr_map):
-        self.encounter = Encounter(curr_map=curr_map, curr_point=self.curr_pos.point)
-        isEncounter = True if self.encounter.check_for_encounter(curr_map, self) else False
-        return isEncounter
+    def actionOnNewSpace(self, curr_map): # Overriden in PC class
+        return False
     
     def move_spaces(self, movement, curr_map): # Default move_spaces() will just move the Person from point A to point B
         curr_map.remove_from_points(self)
         movement = Point(movement)
         self.curr_pos.move_point(movement)
-        isEncounter = self.actionOnNewSpace(curr_map) if self.isActionable else False
+        # isEncounter = self.actionOnNewSpace(curr_map) if self.isActionable else False
+        # self.doAction()
+        isEncounter = self.actionOnNewSpace(curr_map)
+        if isEncounter:
+            self.doAction()
         curr_map.add_to_points(self)
         return isEncounter
+    
+    def doAction(): # Overriden in PC class
+        return False
     
     def attack(self): # Andrew is developing this function
         pass
@@ -274,6 +278,10 @@ class Person:
 
     def kill_person(self, curr_map):
         curr_map.remove_from_points(self)
+
+class Actions:
+    def __init__(self):
+        pass
 
 class PC(Person):
     class SkillTree:
@@ -293,11 +301,27 @@ class PC(Person):
     def addToSkillTree(self):
         pass
 
-    # def move_spaces(self, movement, curr_map): # Overwrite Person.move_spaces() because PC will select action(s) depending on encounter
-    #     super().
-    def move_spaces(self, movement, curr_map):
-        return super().move_spaces(movement, curr_map)
+    # Need to build on this with a sub function that actually handles the encounter
+    def actionOnNewSpace(self, curr_map):
+        self.encounter = Encounter(curr_map=curr_map, curr_point=self.curr_pos.point)
+        isEncounter = True if self.encounter.check_for_encounter(curr_map, self) else False
+        return isEncounter
     
+    def pcAction(self):
+        pass
+
+    def npcAction(self):
+        pass
+
+    def itemAction(self):
+        pass
+
+    def pathAction():
+        pass
+
+    def obstacleAction():
+        pass
+
     def doAction(self):
         '''
         Each category in PointCategoriesObj will have different action characteristics.
@@ -355,7 +379,13 @@ class PC(Person):
             3. Break through the obstacle if the situation allows.
                 - PC.stats.strength will determine if PC has enough strength to break through the obstacle.
         '''
-        pass
+        print('***self.encounter.encounterCategories', self.encounter.encounterCategories)
+        npc = PointCategories.npc
+        # print('***self.encounter.encounterCategories.PointCategories.npc', self.encounter.encounterCategories.npc)
+        
+        for pointCatName, pointCatLL in self.encounter.encounterCategories.pointCategories.items():
+            print('iterating:', pointCatName, pointCatLL)
+
 
 class NPC(Person):
     def __init__(self, name, curr_pos, curr_map, pointCategory, ids, hp=100, mp=100, 
