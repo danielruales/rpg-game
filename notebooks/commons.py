@@ -241,6 +241,7 @@ class Person:
         self.encounter = Encounter(curr_map=curr_map, curr_point=curr_point)
         self.isDead = isDead
         self.isActionable = False
+        self.description = 'TEST DESCRIPTION'
         
         # CHANGE THIS: Make separate classes for pc, npc, item, path, obstacle, etc.
         # Can share common traits but class should be separate
@@ -279,9 +280,73 @@ class Person:
     def kill_person(self, curr_map):
         curr_map.remove_from_points(self)
 
-class Actions:
+'''
+Process for action from user UI to action completion:
+1. A list of action options is presented to the user.
+    - There is a queue on the current point so the user will see option list for NPCs first, then PCs, etc.
+        - For NPCs on the point, all encounters must clear before user can see option list for PCs, etc.
+2. User selects an action option.
+    - User character, object that is being acted on, and action is sent to backend to process
+3. Object being acted on will provide an action back.
+    - Object will decide what to do and act on it.
+        - NPC examples:
+            - Example: If NPC is being analyzed, the NPC description will be returned.
+            - Example: If NPC is being attacked, NPC could attack back, run, call for help, etc.
+            - Example: If NPC is being traded with, NPC will provide trade items and prices.
+            - Example: If NPC is being conversed with, NPC will reply back and continue the dialog.
+            - Example: If NPC is being pickpocketed, algo will determine if successful and will move item from NPC to user.
+                - If unsuccessful, NPC could attack, push you away and be more cautious, call for help.
+4. Object action will provide list of new options to user.
+5. Go back to step 1 and repeat until user attempts to retreat.
+'''
+class ActionOnNPC(Enum):
+    # Analyze, attack, trade, converse, pickpocket
+    ANALYZE = 'Analyze'
+    ATTACK = 'Attack'
+    TRADE = 'Trade'
+    CONVERSE = 'Converse'
+    PICKPOCKET = 'Pickpocket'
+
+class ActionCats:
     def __init__(self):
-        pass
+        self.actionOn = PointCategories
+        self.actionOnNPC = ActionOnNPC
+    
+    actionOnCats = {
+        PointCategories.npc: ActionOnNPC,
+        # PointCategories.pc: 
+    }
+
+    def get_currAction(self, currPointCategory, currSelection):
+        if self.actionOnCats.get(currPointCategory) is not None:
+            self.currAction = self.actionOnCats[currPointCategory].currSelection
+            return self.currAction
+        else:
+            return None
+
+    def doAnalyze(self, currObj):
+        return currObj.description()
+    
+    def doAttack(self, currObj):
+        return currObj.attack()
+    
+    def doTrade(self, currObj):
+        return currObj.trade()
+    
+    def doConverse(self, currObj):
+        return currObj.converse()
+    
+    def doPickpocket(self, currObj):
+        return currObj.pickpocket()
+
+    def doActionOnNPC(self, currSelection):
+        self.currAction = self.get_currAction()
+    
+
+    actionOnCats_func = {
+        ActionOnNPC.ANALYZE: doAnalyze
+    }
+
 
 class PC(Person):
     class SkillTree:
@@ -297,6 +362,7 @@ class PC(Person):
 
         # TODO: Develop class SkillTree and sub functions
         self.skillTree = skillTree
+        self.self_currPointCategory = PointCategories.pc
 
     def addToSkillTree(self):
         pass
@@ -310,7 +376,7 @@ class PC(Person):
     def pcAction(self):
         pass
 
-    def npcAction(self):
+    def npcAction(self, currAction):
         pass
 
     def itemAction(self):
@@ -394,6 +460,7 @@ class NPC(Person):
         
         # Add more attributes for NPC class
         self.isActionable = False
+        self.self_currPointCategory = PointCategories.pc
     
     def move_spaces(self, movement, curr_map):
         return super().move_spaces(movement, curr_map)
