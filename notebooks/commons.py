@@ -347,6 +347,23 @@ class ActionCats:
         ActionOnNPC.ANALYZE: doAnalyze
     }
 
+class SendToUI:
+    def __init__(self):
+        pass
+
+    # First, get encounterCategories
+        # This is a dictionary containing the enum_attrs as keys and the queue for objects within that enum_attr category
+    # Then, get the current prioritized enum_attr category objects queue (let's call the head of this queue the curr_obj)
+    # Then, get the list of options for curr_obj
+    # Then, send this list of options to the user (return statement)
+        # The front-end code will accept the return statement as input and present the list to the user
+    # Another function will accept the user's action response as input
+        # The function will then process the user's action using logic based on the user's character stats, skills, etc.
+        # The function will then complete the user's action and return the result of the action to the user
+            # The front-end code will accept the result of the action and send it to the user
+                # Then the user will be presented with the next_obj's list of options and repeat the process.
+    def sendActionListToUI(self):
+        pass
 
 class PC(Person):
     class SkillTree:
